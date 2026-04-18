@@ -12,9 +12,10 @@ export default function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
+        {/* pb-16 on mobile reserves space above the fixed bottom tab bar */}
         <div className="flex flex-col h-screen bg-gray-50">
           <Nav />
-          <main className="flex-1 overflow-hidden">
+          <main className="flex-1 overflow-hidden pb-16 md:pb-0">
             <Routes>
               <Route path="/" element={<MapView />} />
               <Route path="/controllers" element={<Controllers />} />

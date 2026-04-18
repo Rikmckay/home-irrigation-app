@@ -122,10 +122,10 @@ export default function Valves() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto p-4 space-y-5">
+      <div className="max-w-3xl mx-auto px-4 py-4 space-y-5">
         {Dialog}
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Zap size={20} className="text-yellow-500" /> Valves
           </h1>
@@ -134,9 +134,9 @@ export default function Valves() {
               onClick={openAdd}
               disabled={controllers.length === 0}
               title={controllers.length === 0 ? 'Add a controller first' : ''}
-              className="flex items-center gap-1.5 bg-violet-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="flex items-center gap-1.5 bg-violet-600 text-white px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm active:bg-violet-800 touch-manipulation"
             >
-              <Plus size={15} /> Add Valve
+              <Plus size={16} /> Add Valve
             </button>
           )}
         </div>
@@ -153,11 +153,12 @@ export default function Valves() {
               {editId ? 'Edit Valve' : 'New Valve'}
             </h2>
 
+            {/* Controller + Valve Box — stack on mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Controller *</label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
                   value={form.controller_id}
                   onChange={e => setForm(f => ({ ...f, controller_id: e.target.value }))}
                 >
@@ -171,7 +172,7 @@ export default function Valves() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Valve Box</label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
                   value={form.valve_box_id}
                   onChange={e => setForm(f => ({ ...f, valve_box_id: e.target.value }))}
                 >
@@ -183,16 +184,17 @@ export default function Valves() {
               </div>
             </div>
 
+            {/* Valve Name + Zone Name — stack on mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Valve Name *</label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  inputMode="text"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Valve 3"
-                  autoFocus
                 />
               </div>
 
@@ -200,7 +202,8 @@ export default function Valves() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Zone Name</label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  inputMode="text"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
                   value={form.zone_name}
                   onChange={e => setForm(f => ({ ...f, zone_name: e.target.value }))}
                   placeholder="e.g. Back Lawn"
@@ -211,7 +214,7 @@ export default function Valves() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
               <textarea
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
                 rows={3}
                 value={form.notes}
                 onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -230,19 +233,19 @@ export default function Valves() {
               />
             </div>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-green-600 text-white px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors active:bg-green-800 touch-manipulation"
               >
-                <Save size={14} /> {saving ? 'Saving…' : 'Save'}
+                <Save size={15} /> {saving ? 'Saving…' : 'Save'}
               </button>
               <button
                 onClick={cancel}
-                className="flex items-center gap-1.5 text-gray-600 bg-gray-100 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 text-gray-600 bg-gray-100 px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors touch-manipulation"
               >
-                <X size={14} /> Cancel
+                <X size={15} /> Cancel
               </button>
             </div>
           </div>
@@ -262,11 +265,11 @@ export default function Valves() {
                 <div key={ctrl.id} className="space-y-2">
                   <button
                     onClick={() => toggleCollapse(ctrl.id)}
-                    className="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg text-sm font-semibold text-blue-800 hover:bg-blue-100 transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2.5 min-h-[44px] bg-blue-50 rounded-lg text-sm font-semibold text-blue-800 hover:bg-blue-100 transition-colors touch-manipulation"
                   >
                     {collapsed[ctrl.id]
-                      ? <ChevronRight size={15} />
-                      : <ChevronDown size={15} />}
+                      ? <ChevronRight size={16} />
+                      : <ChevronDown size={16} />}
                     <span>{ctrl.name}</span>
                     <span className="ml-auto text-blue-500 font-normal text-xs">
                       {cValves.length} valve{cValves.length !== 1 ? 's' : ''}
@@ -312,7 +315,8 @@ export default function Valves() {
 
 function ValveCard({ valve, vbName, onEdit, onDelete }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4 shadow-sm hover:shadow-md transition-shadow ml-4">
+    /* Reduced indent on mobile: ml-2 instead of ml-4 */
+    <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-3 shadow-sm hover:shadow-md transition-shadow ml-2 sm:ml-4">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-semibold text-gray-900">{valve.name}</span>
@@ -339,17 +343,17 @@ function ValveCard({ valve, vbName, onEdit, onDelete }) {
       <div className="flex gap-1 flex-shrink-0">
         <button
           onClick={onEdit}
-          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+          className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded-lg transition-colors touch-manipulation"
           title="Edit"
         >
-          <Pencil size={15} />
+          <Pencil size={16} />
         </button>
         <button
           onClick={onDelete}
-          className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+          className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-400 hover:bg-red-50 rounded-lg transition-colors touch-manipulation"
           title="Delete"
         >
-          <Trash2 size={15} />
+          <Trash2 size={16} />
         </button>
       </div>
     </div>

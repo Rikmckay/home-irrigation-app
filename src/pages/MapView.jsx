@@ -70,7 +70,10 @@ export default function MapView() {
     heads: [],
   })
   const [loading, setLoading] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Sidebar starts closed on mobile (narrow screens), open on desktop
+  const [sidebarOpen, setSidebarOpen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  )
   const [selectedCtrl, setSelectedCtrl] = useState('')
   const [selectedValve, setSelectedValve] = useState('')
   const [flyTarget, setFlyTarget] = useState(null)
@@ -145,7 +148,6 @@ export default function MapView() {
   const cbDim    = (cb) => isFiltered && !activeCBIds.has(cb.id)
   const headDim  = (h)  => isFiltered && !activeValveIds.has(h.valve_id)
 
-  // show valve boxes: unfiltered = all; filtered = only relevant ones
   const visibleVBs = isFiltered
     ? all.valveBoxes.filter(vb => activeVBIds.has(vb.id))
     : all.valveBoxes
@@ -154,14 +156,41 @@ export default function MapView() {
     ? all.connBoxes.filter(cb => activeCBIds.has(cb.id))
     : all.connBoxes
 
+  // Close sidebar on mobile when a filter is applied (map is the goal)
+  function handleCtrlChange(e) {
+    setSelectedCtrl(e.target.value)
+    setSelectedValve('')
+    if (window.innerWidth < 768) setSidebarOpen(false)
+  }
+
+  function handleValveChange(e) {
+    setSelectedValve(e.target.value)
+    if (window.innerWidth < 768) setSidebarOpen(false)
+  }
+
+  function clearFilter() {
+    setSelectedCtrl('')
+    setSelectedValve('')
+    setFlyTarget(null)
+  }
+
   return (
     <div className="relative w-full h-full">
+      {/* ── Sidebar overlay backdrop on mobile ──────────────────────── */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden absolute inset-0 z-[999] bg-black/30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Sidebar ─────────────────────────────────────────────────── */}
       <div
         className={`absolute left-0 top-0 z-[1000] h-full transition-transform duration-300
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="relative bg-white shadow-2xl w-64 h-full flex flex-col overflow-hidden">
+        {/* Wider on mobile for thumb reach; fixed 256px on desktop */}
+        <div className="relative bg-white shadow-2xl w-72 md:w-64 h-full flex flex-col overflow-hidden">
           {/* Sidebar content */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Header */}
@@ -169,13 +198,23 @@ export default function MapView() {
               <h2 className="font-bold text-gray-800 text-sm flex items-center gap-1.5">
                 <Filter size={14} /> Filter
               </h2>
-              <button
-                onClick={fetchAll}
-                title="Refresh"
-                className="text-gray-400 hover:text-blue-600 transition-colors"
-              >
-                <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={fetchAll}
+                  title="Refresh"
+                  className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors touch-manipulation"
+                >
+                  <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+                </button>
+                {/* Close button — visible on mobile */}
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="md:hidden p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors touch-manipulation"
+                  title="Close"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
             {/* Controller filter */}
@@ -184,9 +223,9 @@ export default function MapView() {
                 Controller
               </label>
               <select
-                className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white touch-manipulation"
                 value={selectedCtrl}
-                onChange={e => { setSelectedCtrl(e.target.value); setSelectedValve('') }}
+                onChange={handleCtrlChange}
               >
                 <option value="">All Controllers</option>
                 {all.controllers.map(c => (
@@ -202,9 +241,9 @@ export default function MapView() {
                   Valve
                 </label>
                 <select
-                  className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                  className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white touch-manipulation"
                   value={selectedValve}
-                  onChange={e => setSelectedValve(e.target.value)}
+                  onChange={handleValveChange}
                 >
                   <option value="">All Valves</option>
                   {all.valves
@@ -221,10 +260,10 @@ export default function MapView() {
             {/* Clear filter */}
             {isFiltered && (
               <button
-                onClick={() => { setSelectedCtrl(''); setSelectedValve(''); setFlyTarget(null) }}
-                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                onClick={clearFilter}
+                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 font-medium min-h-[36px] touch-manipulation"
               >
-                <X size={12} /> Clear filter
+                <X size={13} /> Clear filter
               </button>
             )}
 
@@ -267,23 +306,28 @@ export default function MapView() {
           </div>
         </div>
 
-        {/* Sidebar toggle tab */}
+        {/* Sidebar toggle tab — desktop only; mobile uses the X button above */}
         <button
           onClick={() => setSidebarOpen(o => !o)}
-          className="absolute -right-7 top-6 bg-white border border-l-0 border-gray-200 rounded-r-lg shadow-md p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
+          className="hidden md:flex absolute -right-7 top-6 bg-white border border-l-0 border-gray-200 rounded-r-lg shadow-md p-1.5 text-gray-500 hover:text-blue-600 transition-colors items-center"
           title={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
         >
           {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </button>
       </div>
 
-      {/* Sidebar open button when closed */}
+      {/* ── Sidebar open button when closed ─────────────────────────── */}
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
-          className="absolute left-0 top-6 z-[1000] bg-white border border-gray-200 rounded-r-lg shadow-md p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
+          className="absolute left-2 top-2 z-[1000] bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2 min-h-[44px] flex items-center gap-1.5 text-sm text-gray-600 hover:text-blue-600 transition-colors touch-manipulation"
+          title="Open filter"
         >
-          <ChevronRight size={16} />
+          <Filter size={15} />
+          <span className="font-medium">Filter</span>
+          {isFiltered && (
+            <span className="w-2 h-2 rounded-full bg-blue-600 ml-0.5" />
+          )}
         </button>
       )}
 

@@ -136,10 +136,10 @@ export default function WateringHeads() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto p-4 space-y-5">
+      <div className="max-w-3xl mx-auto px-4 py-4 space-y-5">
         {Dialog}
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Droplets size={20} className="text-green-600" /> Watering Heads
           </h1>
@@ -148,9 +148,9 @@ export default function WateringHeads() {
               onClick={openAdd}
               disabled={valves.length === 0}
               title={valves.length === 0 ? 'Add a valve first' : ''}
-              className="flex items-center gap-1.5 bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm active:bg-green-800 touch-manipulation"
             >
-              <Plus size={15} /> Add Head
+              <Plus size={16} /> Add Head
             </button>
           )}
         </div>
@@ -167,11 +167,12 @@ export default function WateringHeads() {
               {editId ? 'Edit Watering Head' : 'New Watering Head'}
             </h2>
 
+            {/* Valve + Head Type — stack on mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Valve *</label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
                   value={form.valve_id}
                   onChange={e => setForm(f => ({ ...f, valve_id: e.target.value }))}
                 >
@@ -195,7 +196,7 @@ export default function WateringHeads() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Head Type</label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
                   value={form.head_type}
                   onChange={e => setForm(f => ({ ...f, head_type: e.target.value }))}
                 >
@@ -206,23 +207,24 @@ export default function WateringHeads() {
               </div>
             </div>
 
+            {/* Name + Connection Box — stack on mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                  inputMode="text"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Front Lawn Rotor 1"
-                  autoFocus
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Connection Box</label>
                 <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
                   value={form.connection_box_id}
                   onChange={e => setForm(f => ({ ...f, connection_box_id: e.target.value }))}
                 >
@@ -238,7 +240,8 @@ export default function WateringHeads() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Area Description</label>
               <input
                 type="text"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                inputMode="text"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                 value={form.area_description}
                 onChange={e => setForm(f => ({ ...f, area_description: e.target.value }))}
                 placeholder="e.g. Waters the front lawn, east half"
@@ -248,7 +251,7 @@ export default function WateringHeads() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
               <textarea
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
                 rows={2}
                 value={form.notes}
                 onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -267,19 +270,19 @@ export default function WateringHeads() {
               />
             </div>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-green-600 text-white px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors active:bg-green-800 touch-manipulation"
               >
-                <Save size={14} /> {saving ? 'Saving…' : 'Save'}
+                <Save size={15} /> {saving ? 'Saving…' : 'Save'}
               </button>
               <button
                 onClick={cancel}
-                className="flex items-center gap-1.5 text-gray-600 bg-gray-100 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 text-gray-600 bg-gray-100 px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors touch-manipulation"
               >
-                <X size={14} /> Cancel
+                <X size={15} /> Cancel
               </button>
             </div>
           </div>
@@ -298,11 +301,11 @@ export default function WateringHeads() {
               <div key={valve.id} className="space-y-2">
                 <button
                   onClick={() => toggleCollapse(valve.id)}
-                  className="w-full flex items-center gap-2 px-3 py-2 bg-green-50 rounded-lg text-sm font-semibold text-green-900 hover:bg-green-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2.5 min-h-[44px] bg-green-50 rounded-lg text-sm font-semibold text-green-900 hover:bg-green-100 transition-colors touch-manipulation"
                 >
                   {collapsed[valve.id]
-                    ? <ChevronRight size={15} />
-                    : <ChevronDown size={15} />}
+                    ? <ChevronRight size={16} />
+                    : <ChevronDown size={16} />}
                   <span>
                     {valve.name}
                     {valve.zone_name ? ` — ${valve.zone_name}` : ''}
@@ -353,7 +356,8 @@ export default function WateringHeads() {
 function HeadCard({ head, cbName, onEdit, onDelete }) {
   const typeClass = TYPE_COLORS[head.head_type] || TYPE_COLORS.Other
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4 shadow-sm hover:shadow-md transition-shadow ml-4">
+    /* Reduced indent on mobile */
+    <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-3 shadow-sm hover:shadow-md transition-shadow ml-2 sm:ml-4">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-semibold text-gray-900">{head.name}</span>
@@ -385,17 +389,17 @@ function HeadCard({ head, cbName, onEdit, onDelete }) {
       <div className="flex gap-1 flex-shrink-0">
         <button
           onClick={onEdit}
-          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+          className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded-lg transition-colors touch-manipulation"
           title="Edit"
         >
-          <Pencil size={15} />
+          <Pencil size={16} />
         </button>
         <button
           onClick={onDelete}
-          className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+          className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-400 hover:bg-red-50 rounded-lg transition-colors touch-manipulation"
           title="Delete"
         >
-          <Trash2 size={15} />
+          <Trash2 size={16} />
         </button>
       </div>
     </div>

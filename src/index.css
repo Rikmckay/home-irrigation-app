@@ -17,3 +17,21 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* iOS safe area padding for bottom tab bar */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/*
+  Prevent double-tap zoom on interactive elements.
+  This eliminates the 300ms tap delay on iOS without needing
+  touch-action: manipulation on every individual element.
+*/
+button,
+a,
+select,
+input,
+textarea {
+  touch-action: manipulation;
+}

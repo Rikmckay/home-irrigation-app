@@ -81,19 +81,19 @@ export default function ValveBoxes() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto p-4 space-y-5">
+      <div className="max-w-3xl mx-auto px-4 py-4 space-y-5">
         {Dialog}
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Box size={20} className="text-orange-500" /> Valve Boxes
           </h1>
           {!showForm && (
             <button
               onClick={openAdd}
-              className="flex items-center gap-1.5 bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 bg-orange-500 text-white px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors shadow-sm active:bg-orange-700 touch-manipulation"
             >
-              <Plus size={15} /> Add Valve Box
+              <Plus size={16} /> Add Valve Box
             </button>
           )}
         </div>
@@ -108,18 +108,18 @@ export default function ValveBoxes() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
               <input
                 type="text"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                inputMode="text"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 min-h-[44px] text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Front Left Valve Box"
-                autoFocus
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
               <textarea
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
                 rows={3}
                 value={form.notes}
                 onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -138,19 +138,19 @@ export default function ValveBoxes() {
               />
             </div>
 
-            <div className="flex gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <button
                 onClick={save}
                 disabled={saving}
-                className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-green-600 text-white px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors active:bg-green-800 touch-manipulation"
               >
-                <Save size={14} /> {saving ? 'Saving…' : 'Save'}
+                <Save size={15} /> {saving ? 'Saving…' : 'Save'}
               </button>
               <button
                 onClick={cancel}
-                className="flex items-center gap-1.5 text-gray-600 bg-gray-100 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 text-gray-600 bg-gray-100 px-4 py-2.5 min-h-[44px] rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors touch-manipulation"
               >
-                <X size={14} /> Cancel
+                <X size={15} /> Cancel
               </button>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function ValveBoxes() {
             {items.map(item => (
               <div
                 key={item.id}
-                className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-3 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -188,17 +188,17 @@ export default function ValveBoxes() {
                 <div className="flex gap-1 flex-shrink-0">
                   <button
                     onClick={() => openEdit(item)}
-                    className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-500 hover:bg-blue-50 rounded-lg transition-colors touch-manipulation"
                     title="Edit"
                   >
-                    <Pencil size={15} />
+                    <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => del(item)}
-                    className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-red-400 hover:bg-red-50 rounded-lg transition-colors touch-manipulation"
                     title="Delete"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>

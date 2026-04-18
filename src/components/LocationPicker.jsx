@@ -43,10 +43,11 @@ function InitialView({ lat, lng }) {
  */
 export default function LocationPicker({ lat, lng, onChange }) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
+      {/* Taller on mobile for easier finger tapping; 220px on small, 300px on md+ */}
       <div
         className="rounded-xl overflow-hidden border border-gray-300 shadow-sm cursor-crosshair"
-        style={{ height: 300 }}
+        style={{ height: 'clamp(220px, 40vw, 300px)' }}
       >
         <MapContainer
           center={DEFAULT_CENTER}
@@ -64,12 +65,25 @@ export default function LocationPicker({ lat, lng, onChange }) {
           )}
         </MapContainer>
       </div>
-      <p className="text-xs text-gray-500 flex items-center gap-1">
-        <MapPin size={11} />
+
+      {/* Coordinates display — text-sm instead of text-xs for readability */}
+      <p className="text-sm text-gray-500 flex items-center gap-1.5">
+        <MapPin size={13} />
         {lat != null && lng != null
           ? `${lat.toFixed(6)}, ${lng.toFixed(6)}`
-          : 'Click the map to place a pin. Pan/zoom to your yard first.'}
+          : 'Tap the map to place a pin. Pan/zoom to your yard first.'}
       </p>
+
+      {/* Clear pin button — shown when a location is set */}
+      {lat != null && lng != null && (
+        <button
+          type="button"
+          onClick={() => onChange(null, null)}
+          className="text-sm text-red-500 hover:text-red-700 font-medium min-h-[36px] touch-manipulation"
+        >
+          Remove pin
+        </button>
+      )}
     </div>
   )
 }
