@@ -35,9 +35,12 @@ function MapCenterer({ coords }) {
   return null;
 }
 
-export default function LocationPicker({ onLocationChange }) {
-  const [uiState, setUiState] = useState("idle");
-  const [coords, setCoords] = useState(null);
+export default function LocationPicker({ lat, lng, onChange }) {
+  const hasInitial = lat != null && lng != null;
+  const [uiState, setUiState] = useState(hasInitial ? "success" : "idle");
+  const [coords, setCoords] = useState(
+    hasInitial ? { lat, lng, accuracy: null } : null
+  );
   const [errorMsg, setErrorMsg] = useState("");
   const [manualLat, setManualLat] = useState("");
   const [manualLng, setManualLng] = useState("");
@@ -51,10 +54,9 @@ export default function LocationPicker({ onLocationChange }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (coords && onLocationChange)
-      onLocationChange({ lat: coords.lat, lng: coords.lng, accuracy: coords.accuracy });
-  }, [coords, onLocationChange]);
+  function notifyParent(next) {
+    if (onChange) onChange(next.lat, next.lng);
+  }
 
   function captureLocation() {
     if (!("geolocation" in navigator)) {
@@ -67,12 +69,14 @@ export default function LocationPicker({ onLocationChange }) {
     setErrorMsg("");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoords({
+        const next = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: Math.round(position.coords.accuracy),
-        });
+        };
+        setCoords(next);
         setUiState("success");
+        notifyParent(next);
       },
       (err) => {
         let msg;
@@ -99,12 +103,14 @@ export default function LocationPicker({ onLocationChange }) {
   function handleManualSubmit(e) {
     e.preventDefault();
     setManualError("");
-    const lat = parseFloat(manualLat);
-    const lng = parseFloat(manualLng);
-    if (isNaN(lat) || lat < -90 || lat > 90) { setManualError("Latitude must be between -90 and 90."); return; }
-    if (isNaN(lng) || lng < -180 || lng > 180) { setManualError("Longitude must be between -180 and 180."); return; }
-    setCoords({ lat, lng, accuracy: null });
+    const parsedLat = parseFloat(manualLat);
+    const parsedLng = parseFloat(manualLng);
+    if (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90) { setManualError("Latitude must be between -90 and 90."); return; }
+    if (isNaN(parsedLng) || parsedLng < -180 || parsedLng > 180) { setManualError("Longitude must be between -180 and 180."); return; }
+    const next = { lat: parsedLat, lng: parsedLng, accuracy: null };
+    setCoords(next);
     setUiState("success");
+    notifyParent(next);
   }
 
   if (uiState === "idle") return (
