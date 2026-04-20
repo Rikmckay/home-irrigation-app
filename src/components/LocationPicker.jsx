@@ -29,22 +29,15 @@ function accuracyLabel(accuracy) {
 
 function MapCenterer({ coords }) {
   const map = useMap();
-  const didCenterRef = useRef(false);
   useEffect(() => {
-    if (coords && !didCenterRef.current) {
-      map.setView([coords.lat, coords.lng], 18);
-      didCenterRef.current = true;
-    }
+    if (coords) map.setView([coords.lat, coords.lng], 17);
   }, [coords, map]);
   return null;
 }
 
-export default function LocationPicker({ lat, lng, onChange }) {
-  const hasInitial = lat != null && lng != null;
-  const [uiState, setUiState] = useState(hasInitial ? "success" : "idle");
-  const [coords, setCoords] = useState(
-    hasInitial ? { lat, lng, accuracy: null } : null
-  );
+export default function LocationPicker({ onLocationChange }) {
+  const [uiState, setUiState] = useState("idle");
+  const [coords, setCoords] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [manualLat, setManualLat] = useState("");
   const [manualLng, setManualLng] = useState("");
@@ -58,9 +51,10 @@ export default function LocationPicker({ lat, lng, onChange }) {
     };
   }, []);
 
-  function notifyParent(next) {
-    if (onChange) onChange(next.lat, next.lng);
-  }
+  useEffect(() => {
+    if (coords && onLocationChange)
+      onLocationChange({ lat: coords.lat, lng: coords.lng, accuracy: coords.accuracy });
+  }, [coords, onLocationChange]);
 
   function captureLocation() {
     if (!("geolocation" in navigator)) {
@@ -73,14 +67,12 @@ export default function LocationPicker({ lat, lng, onChange }) {
     setErrorMsg("");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const next = {
+        setCoords({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: Math.round(position.coords.accuracy),
-        };
-        setCoords(next);
+        });
         setUiState("success");
-        notifyParent(next);
       },
       (err) => {
         let msg;
@@ -107,14 +99,12 @@ export default function LocationPicker({ lat, lng, onChange }) {
   function handleManualSubmit(e) {
     e.preventDefault();
     setManualError("");
-    const parsedLat = parseFloat(manualLat);
-    const parsedLng = parseFloat(manualLng);
-    if (isNaN(parsedLat) || parsedLat < -90 || parsedLat > 90) { setManualError("Latitude must be between -90 and 90."); return; }
-    if (isNaN(parsedLng) || parsedLng < -180 || parsedLng > 180) { setManualError("Longitude must be between -180 and 180."); return; }
-    const next = { lat: parsedLat, lng: parsedLng, accuracy: null };
-    setCoords(next);
+    const lat = parseFloat(manualLat);
+    const lng = parseFloat(manualLng);
+    if (isNaN(lat) || lat < -90 || lat > 90) { setManualError("Latitude must be between -90 and 90."); return; }
+    if (isNaN(lng) || lng < -180 || lng > 180) { setManualError("Longitude must be between -180 and 180."); return; }
+    setCoords({ lat, lng, accuracy: null });
     setUiState("success");
-    notifyParent(next);
   }
 
   if (uiState === "idle") return (
@@ -153,30 +143,13 @@ export default function LocationPicker({ lat, lng, onChange }) {
             <span>±{coords.accuracy} m</span><span className="opacity-70">•</span><span>{accLabel} accuracy</span>
           </div>
         )}
-        <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm" style={{ height: 260 }}>
-          <MapContainer center={[coords.lat, coords.lng]} zoom={18} maxZoom={19} style={{ height: "100%", width: "100%" }} attributionControl={false}>
-            <TileLayer
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              maxZoom={19}
-            />
+        <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm" style={{ height: 220 }}>
+          <MapContainer center={[coords.lat, coords.lng]} zoom={17} style={{ height: "100%", width: "100%" }} zoomControl={false} dragging={false} scrollWheelZoom={false} doubleClickZoom={false} touchZoom={false} attributionControl={false}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <MapCenterer coords={coords} />
-            <Marker
-              position={[coords.lat, coords.lng]}
-              draggable
-              eventHandlers={{
-                dragend: (e) => {
-                  const { lat: nLat, lng: nLng } = e.target.getLatLng();
-                  const next = { lat: nLat, lng: nLng, accuracy: null };
-                  setCoords(next);
-                  notifyParent(next);
-                },
-              }}
-            />
+            <Marker position={[coords.lat, coords.lng]} />
           </MapContainer>
         </div>
-        <p className="text-xs text-gray-500 text-center">
-          Drag the pin to adjust, or pan and zoom to find the exact spot.
-        </p>
         <button onClick={captureLocation} className="w-full flex items-center justify-center gap-2 border border-green-600 text-green-700 hover:bg-green-50 font-medium py-3 px-4 rounded-xl transition-colors">
           <span aria-hidden="true">🔄</span> Recapture
         </button>

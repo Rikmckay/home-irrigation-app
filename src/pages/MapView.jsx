@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'react-leaflet'
+import { useState, useEffect, useCallback } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { supabase } from '../lib/supabase'
 import { Filter, RefreshCw, ChevronLeft, ChevronRight, X } from 'lucide-react'
@@ -77,18 +77,6 @@ export default function MapView() {
   const [selectedCtrl, setSelectedCtrl] = useState('')
   const [selectedValve, setSelectedValve] = useState('')
   const [flyTarget, setFlyTarget] = useState(null)
-  const didInitialFitRef = useRef(false)
-
-  // Collect every lat/lng across all pin types
-  function getAllPoints(data) {
-    const points = []
-    data.controllers.forEach(c => { if (c.lat && c.lng) points.push([c.lat, c.lng]) })
-    data.valveBoxes.forEach(vb => { if (vb.lat && vb.lng) points.push([vb.lat, vb.lng]) })
-    data.connBoxes.forEach(cb => { if (cb.lat && cb.lng) points.push([cb.lat, cb.lng]) })
-    data.valves.forEach(v => { if (v.lat && v.lng) points.push([v.lat, v.lng]) })
-    data.heads.forEach(h => { if (h.lat && h.lng) points.push([h.lat, h.lng]) })
-    return points
-  }
 
   // ── Fetch all data ──────────────────────────────────────────────────
   const fetchAll = useCallback(async () => {
@@ -111,17 +99,6 @@ export default function MapView() {
   }, [])
 
   useEffect(() => { fetchAll() }, [fetchAll])
-
-  // Auto-fit to all pins on first successful load so the map doesn't
-  // strand the user on the default (Victoria) center.
-  useEffect(() => {
-    if (didInitialFitRef.current || loading) return
-    const points = getAllPoints(all)
-    if (points.length > 0) {
-      setFlyTarget({ bounds: points })
-      didInitialFitRef.current = true
-    }
-  }, [loading, all])
 
   // ── Derived sets for filtering ──────────────────────────────────────
   const ctrlValves = selectedCtrl
@@ -194,9 +171,7 @@ export default function MapView() {
   function clearFilter() {
     setSelectedCtrl('')
     setSelectedValve('')
-    // Re-fit to every pin so the user gets an overview, not a blank default.
-    const points = getAllPoints(all)
-    setFlyTarget(points.length > 0 ? { bounds: points } : null)
+    setFlyTarget(null)
   }
 
   return (
@@ -360,24 +335,12 @@ export default function MapView() {
       <MapContainer
         center={DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
-        maxZoom={19}
         style={{ height: '100%', width: '100%' }}
       >
-        <LayersControl position="topright">
-          <LayersControl.BaseLayer checked name="Satellite">
-            <TileLayer
-              attribution='Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              maxZoom={19}
-            />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="Street">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </LayersControl.BaseLayer>
-        </LayersControl>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
         <FlyTo target={flyTarget} />
 
         {/* Controllers */}
